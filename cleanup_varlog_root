@@ -1,0 +1,55 @@
+#!/bin/bash
+#Script to cleanup log files
+
+## Default Values
+
+LOG_DIR=/tmp/var/logg   # Test value - change befoer prod
+ROOT_UID=501  		# Only user with root privileges
+DEFAULT_LINES=50 
+LOG_FILE=server.log
+
+## Error Codes
+E_ERROR="ERROR: Something went wrong"
+E_XCD=86
+E_NOTROOT=87       	# Non-root exit error
+
+
+# Run as root
+if [ "$UID" -ne "$ROOT_UID" ]
+then
+  echo "ERROR: Must be root to run this script."
+  exit $E_NONROOT
+fi
+
+if [ -n "$1" ]
+then
+  lines=$1
+else
+  lines=$DEFAULT_LINES #Default
+fi
+
+#cd $LOG_DIR
+
+#if [ "$PWD" != "$LOG_DIR" ]
+#then
+#  echo "ERROR: Can't change to $LOG_DIR."
+#  exit $E_XCD
+#fi
+
+#More efficient way to check directory
+
+cd $LOG_DIR || {
+  echo "ERROR: Cannot change to necessary directory." >&2
+  exit $E_XCD;
+}
+
+if [ ! -f $LOG_FILE ]
+then
+  echo "ERROR: $LOG_FILE not found in $LOG_DIR"
+  exit $E_XCD
+fi
+
+tail -n $lines $LOG_FILE > tempFile.temp && mv tempFile.temp $LOG_FILE || exit $E_ERROR
+echo "SUCCESS: $LOG_DIR/$LOG_FILE cleaned up!" 
+
+exit 0;
