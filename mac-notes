@@ -1,0 +1,6 @@
+
+# Quarantine mac file/folder
+# http://osxdaily.com/2010/09/12/disable-application-downloaded-from-the-internet-message-in-mac-os-x/
+  xattr -d -r com.apple.quarantine /Path/to/application/
+  
+  e.g. 
